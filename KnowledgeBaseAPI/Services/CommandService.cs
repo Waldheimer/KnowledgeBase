@@ -1,0 +1,237 @@
+﻿using KnowledgeBaseAPI.Data;
+using KnowledgeBaseAPI.Data.DataContext;
+using KnowledgeBaseAPI.Data.DTOs;
+
+namespace KnowledgeBaseAPI.Services
+{
+    public class CommandService : IDataService<CreateCSD_DTO, ReadCSD_DTO, UpdateCSD_DTO, Guid>
+    {
+        private readonly KB_DataContext _context;
+
+        public CommandService(KB_DataContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Creates the Command, the Descriptor and the Description and connects 
+        /// them together with ONE Guid
+        /// </summary>
+        /// <param name="item">
+        /// Contains all information to create Command and Descriptor with optional Description
+        /// Description can be added later on
+        /// </param>
+        /// <returns>true/false depending on success</returns>
+        public string CreateEntry(CreateCSD_DTO item)
+        {
+            Guid guid = Guid.NewGuid();
+            Description description = Description.fromCreateCSD_DTO(guid, item);
+            Descriptor descriptor = Descriptor.fromCreateCSD_DTO(guid, item);
+            Command command = Command.fromCreateCSD_DTO(guid, item);
+            try
+            {
+                _context.Descriptors.Add(descriptor);
+                _context.Commands.Add(command);
+                _context.Descriptions.Add(description);
+                _context.SaveChanges();
+                return descriptor.ID.ToString();    
+
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return string.Empty;
+            }
+
+        }
+
+        /// <summary>
+        /// Gets the Command with Decriptor and Description with given ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>
+        /// A ReadCommandDTOs that's a combined Command/Descriptor/Description
+        /// with matching ID
+        /// </returns>
+        public IEnumerable<ReadCSD_DTO> GetEntryById(Guid id)
+        {
+            try
+            {
+                var command = _context.Commands.First(c => c.Descriptor == id);
+                var descriptor = _context.Descriptors.First(c => c.ID == id);
+                var description = _context.Descriptions.First(c => c.ID == id);
+                ReadCSD_DTO result = new ReadCSD_DTO
+                {
+                    ID = id,
+                    Command = command.CommandText ?? string.Empty,
+                    Description = description.DescriptionText ?? string.Empty,
+                    System = descriptor.System ?? string.Empty,
+                    Tech= descriptor.Tech ?? string.Empty,
+                    Lang = descriptor.Lang ?? string.Empty,
+                    Version = description.Version ?? string.Empty
+                };
+                return new List<ReadCSD_DTO> { result };
+            }catch (Exception ex)
+            {
+                return new List<ReadCSD_DTO>();
+            }
+        }
+        /// <summary>
+        /// Just returns all Commands if no Guid is given
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ReadCSD_DTO> GetEntries()
+        {
+            return from command in _context.Commands
+                   from descriptor in _context.Descriptors
+                   from description in _context.Descriptions
+                   where descriptor.ID.Equals(command.Descriptor) && description.ID.Equals(command.Descriptor)
+                   select new ReadCSD_DTO
+                   {
+                       ID = descriptor.ID,
+                       Command = command.CommandText,
+                       Description = description.DescriptionText,
+                       System = descriptor.System,
+                       Tech = descriptor.Tech,
+                       Lang = descriptor.Lang,
+                       Version = description.Version
+                   };
+        }
+
+        /// <summary>
+        /// Gets all Commands with Decriptors and Descriptions by 'Lang'-Attribute
+        /// </summary>
+        /// <param name="lang">The specified Lang(guage) Attribute in the Descriptor</param>
+        /// <returns>
+        /// A List of ReadCommandDTOs which are combined Command/Descriptor/Description
+        /// with matching ID
+        /// </returns>
+        public IEnumerable<ReadCSD_DTO> GetEntriesByLang(string lang)
+        {
+            var results = (from ds in _context.Descriptors
+                           where ds.Lang.Equals(lang)
+                           from desc in _context.Descriptions
+                           where desc.ID.Equals(ds.ID)
+                           from data in _context.Commands
+                           where data.Descriptor.Equals(ds.ID)
+                           select new ReadCSD_DTO
+                           {
+                               ID = ds.ID,
+                               Command = data.CommandText,
+                               Lang = ds.Lang,
+                               System = ds.System,
+                               Tech = ds.Tech,
+                               Description = desc.DescriptionText,
+                               Version = desc.Version
+                           }).ToList();
+            return results;
+        }
+
+        /// <summary>
+        /// Gets all Commands with Decriptors and Descriptions by 'System'-Attribute
+        /// </summary>
+        /// <param name="system">The specified System Attribute in the Descriptor</param>
+        /// <returns>
+        /// A List of ReadCommandDTOs which are combined Command/Descriptor/Description
+        /// with matching ID
+        /// </returns>
+        public IEnumerable<ReadCSD_DTO> GetEntriesBySystem(string system)
+        {
+            var results = (from ds in _context.Descriptors
+                           where ds.System.Equals(system)
+                           from desc in _context.Descriptions
+                           where desc.ID.Equals(ds.ID)
+                           from data in _context.Commands
+                           where data.Descriptor.Equals(ds.ID)
+                           select new ReadCSD_DTO
+                           {
+                               ID= ds.ID,
+                               Command = data.CommandText,
+                               Lang = ds.Lang,
+                               System = ds.System,
+                               Tech = ds.Tech,
+                               Description = desc.DescriptionText,
+                               Version = desc.Version
+                           }).ToList();
+            return results;
+        }
+
+        /// <summary>
+        /// Gets all Commands with Decriptors and Descriptions by 'Tech'-Attribute
+        /// </summary>
+        /// <param name="tech">The specified Tech Attribute in the Descriptor</param>
+        /// <returns>
+        /// A List of ReadCommandDTOs which are combined Command/Descriptor/Description
+        /// with matching ID
+        /// </returns>
+        public IEnumerable<ReadCSD_DTO> GetEntriesByTech(string tech)
+        {
+            var results = (from ds in _context.Descriptors
+                           where ds.Tech.Equals(tech)
+                           from desc in _context.Descriptions
+                           where desc.ID.Equals(ds.ID)
+                           from data in _context.Commands
+                           where data.Descriptor.Equals(ds.ID)
+                           select new ReadCSD_DTO
+                           {
+                               ID = ds.ID,
+                               Command = data.CommandText,
+                               Lang = ds.Lang,
+                               System = ds.System,
+                               Tech = ds.Tech,
+                               Description = desc.DescriptionText,
+                               Version = desc.Version
+                           }).ToList();
+            return results;
+        }
+
+        /// <summary>
+        /// Updates a Command and/or the corresponding Descriptor/Description
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool UpdateEntry(UpdateCSD_DTO item)
+        {
+            bool result = false;
+            var command = Command.fromUpdateCSD_DTO(item);
+            var descriptor = Descriptor.fromUpdateCSD_DTO(item);
+            var description = Description.fromUpdateCSD_DTO(item);
+
+            try
+            {
+                _context.Update<Command>(command);
+                _context.Update<Descriptor>(descriptor);
+                _context.Update<Description>(description);
+                _context.SaveChanges();
+
+                result = true;
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes the Command/Descriptor/Description with given ID from the DB
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Operation Success</returns>
+        public bool DeleteEntry(string id)
+        {
+            bool result = false;
+            try
+            {
+                _context.Remove<Command>(_context.Commands.First(c => c.Descriptor.ToString().Equals(id)));
+                _context.Remove<Descriptor>(_context.Descriptors.First(c => c.ID.ToString().Equals(id)));
+                _context.Remove<Description>(_context.Descriptions.First(c => c.ID.ToString().Equals(id)));
+                _context.SaveChanges();
+                result = true;
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return result;
+        }
+    }
+}

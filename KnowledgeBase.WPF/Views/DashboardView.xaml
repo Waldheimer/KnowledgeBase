@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="KnowledgeBase.WPF.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KnowledgeBase.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="../Styles/LinearGradients.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!-- Gives an Overview over all Systems,Techs,Langs,Commands,Snippets,Documentations with counts -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <LinearGradientBrush x:Key="BorderBrushBO">
+                <GradientStop Color="#ff8844" Offset="0"/>
+                <GradientStop Color="SteelBlue" Offset="1"/>
+            </LinearGradientBrush>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrushBO}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="1"/>
+                <Setter Property="Margin" Value="2 5"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}">
+                </Setter>
+            </Style>
+            <Style TargetType="TextBlock" >
+                <Setter Property="Foreground" Value="#ff8844"/>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Command Tab -->
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Border>
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" Grid.Row="0" 
+                               FontWeight="Bold" TextWrapping="Wrap">Commands</TextBlock>
+                    <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            FontSize="64" FontWeight="Bold" Text="{Binding CommandCount}"/>
+            </Grid>
+            </Border>
+        </Grid>
+        <!-- Snippet Tab -->
+        <Grid Grid.Row="0" Grid.Column="1" Visibility="Hidden">
+            <Border>
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" Grid.Row="0" 
+                               FontWeight="Bold" TextWrapping="Wrap">Snippets</TextBlock>
+                    <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            FontSize="64" FontWeight="Bold" Text="{Binding SnippetCount}"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- Documentation Tab -->
+        <Grid Grid.Row="0" Grid.Column="2" Visibility="Hidden">
+            <Border>
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" Grid.Row="0" 
+                               FontWeight="Bold" TextWrapping="Wrap">Documentations</TextBlock>
+                    <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            FontSize="64" FontWeight="Bold" Text="{Binding DocumentationCount}"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- Systems Tab -->
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Border>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" FontWeight="Bold">Systems</TextBlock>
+                        <ItemsControl ItemsSource="{Binding Systems}" Grid.Row="1">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                <Button Content="{Binding}" Background="{StaticResource BackgroundBrush}"
+                                        Margin="25 5" FontSize="20" FontWeight="Bold" Foreground="White" Padding="10 5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+        </Grid>
+        <!-- Techs Tab -->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Border>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" FontWeight="Bold">Techs</TextBlock>
+                    <ItemsControl ItemsSource="{Binding Technologies}" Grid.Row="1">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}"  Background="{StaticResource BackgroundBrush}"
+                                        Margin="25 5" FontSize="20" FontWeight="Bold" Foreground="White" Padding="10 5"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- Langs Tab-->
+        <Grid Grid.Column="2" Grid.Row="1">
+            <Border>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" FontWeight="Bold">Langs</TextBlock>
+                    <ItemsControl ItemsSource="{Binding Languages}" Grid.Row="1">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}" Background="{StaticResource BackgroundBrush}"
+                                        Margin="25 5" FontSize="20" FontWeight="Bold" Foreground="White" Padding="10 5"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
